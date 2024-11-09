@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class WallpaperScreen extends StatefulWidget {
   const WallpaperScreen({super.key});
@@ -10,6 +10,21 @@ class WallpaperScreen extends StatefulWidget {
 }
 
 class _WallpaperScreenState extends State<WallpaperScreen> {
+  fetchPhotos() async {
+    await http.get(Uri.parse("https://api.pexels.com/v1/curated?per_page=1"), headers: {
+      "Authorization":
+          "ecssEpk0roCo9ZXodoSPmr3ogLg9j9CpRyyNaVIk57gPAduOhaq4sXXX"
+    }).then((onValue) {
+      print(onValue.body);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPhotos();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
