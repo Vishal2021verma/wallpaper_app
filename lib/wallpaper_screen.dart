@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:wallpaper_app/fullscreen_screen.dart';
 
 class WallpaperScreen extends StatefulWidget {
   const WallpaperScreen({super.key});
@@ -68,11 +69,21 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
                       crossAxisSpacing: 2,
                       mainAxisSpacing: 2,
                       childAspectRatio: 2 / 3),
-                  itemBuilder: (context, index) => Container(
-                        color: Colors.grey.shade200,
-                        child: Image.network(
-                          images[index]['src']['tiny'],
-                          fit: BoxFit.cover,
+                  itemBuilder: (context, index) => InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FullscreenScreen(
+                                      imageUrl: images[index]['src']
+                                          ['large2x'])));
+                        },
+                        child: Container(
+                          color: Colors.grey.shade200,
+                          child: Image.network(
+                            images[index]['src']['tiny'],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ))),
           Align(
@@ -82,6 +93,9 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
                   loadMore();
                 },
                 child: const Text("Load More")),
+          ),
+          SizedBox(
+            height: 30,
           )
         ],
       ),
