@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,13 +11,27 @@ class WallpaperScreen extends StatefulWidget {
 }
 
 class _WallpaperScreenState extends State<WallpaperScreen> {
+  List images = [];
+  int pageNumber = 1;
   fetchPhotos() async {
-    await http.get(Uri.parse("https://api.pexels.com/v1/curated?per_page=1"), headers: {
-      "Authorization":
-          "ecssEpk0roCo9ZXodoSPmr3ogLg9j9CpRyyNaVIk57gPAduOhaq4sXXX"
-    }).then((onValue) {
-      print(onValue.body);
+    await http.get(
+        Uri.parse(
+            "https://api.pexels.com/v1/curated?per_page=80&page=$pageNumber"),
+        headers: {
+          "Authorization":
+              "ecssEpk0roCo9ZXodoSPmr3ogLg9j9CpRyyNaVIk57gPAduOhaq4sXXX"
+        }).then((onValue) {
+      Map result = jsonDecode(onValue.body);
+      setState(() {
+        images.addAll(result["photos"]);
+      });
     });
+  }
+
+  loadMore() {
+    pageNumber = pageNumber + 1;
+    setState(() {});
+    fetchPhotos();
   }
 
   @override
@@ -47,6 +62,7 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
         children: [
           Expanded(
               child: GridView.builder(
+                  itemCount: images.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 2,
@@ -54,10 +70,18 @@ class _WallpaperScreenState extends State<WallpaperScreen> {
                       childAspectRatio: 2 / 3),
                   itemBuilder: (context, index) => Container(
                         color: Colors.grey.shade200,
+                        child: Image.network(
+                          images[index]['src']['tiny'],
+                          fit: BoxFit.cover,
+                        ),
                       ))),
           Align(
             alignment: Alignment.center,
-            child: TextButton(onPressed: () {}, child: const Text("Load More")),
+            child: TextButton(
+                onPressed: () {
+                  loadMore();
+                },
+                child: const Text("Load More")),
           )
         ],
       ),
